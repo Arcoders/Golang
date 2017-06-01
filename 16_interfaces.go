@@ -19,8 +19,9 @@ func (this Admin) Nombre() string {
     return this.nombre
 }
 
-func auth(user User) string{
-    if user.Permisos() == 5 {
+func auth(user User) string {
+    permisos := user.Permisos()
+    if permisos == 5 {
         return user.Nombre() + " es el amo y lo controla todo..."
     }
     return ""
@@ -28,6 +29,9 @@ func auth(user User) string{
 
 func main() {
     admin := Admin{"Ismael Haytam"}
+    usuarios := []User{admin}
 
-    fmt.Println(auth(admin))
+    for _,usuario := range usuarios {
+        fmt.Println(auth(usuario))
+    }
 }
