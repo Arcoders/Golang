@@ -1,8 +1,10 @@
 $(document).ready(function() {
 
-    $("#form_registro").on("submit", function() {
+    var user_name;
+
+    $("#form_registro").on("submit", function(e) {
         e.preventDefault();
-        user_name = $("#user_name").val()
+        user_name = $("#user_name").val();
 
         $.ajax({
             type: "POST",
@@ -11,13 +13,22 @@ $(document).ready(function() {
                 "user_name": user_name
             },
             success: function(data) {
-                result()
+                result(data)
             }
         })
     })
 
-    function result() {
-        console.log("El servidor nos envió algo...");
+    function result(data) {
+        obj = JSON.parse(data);
+        if (obj.isvalid) {
+            create_conexion()
+        }else{
+            console.log('Intentalo con otro nombre de usuario');
+        }
+    }
+
+    function create_conexion() {
+        var conexion = WebSocket("ws://loclhost:8000/chat" + user_name);
     }
 
 });

@@ -2,6 +2,7 @@ package main
 
 import (
     "github.com/gorilla/mux"
+    "github.com/gorilla/WebSocket"
     "log"
     "net/http"
     "encoding/json"
@@ -10,15 +11,18 @@ import (
 
 type Response struct {
     Message string `json:"message"`
-    Status bool `json:"status"`
+    Status int `json:"status"`
+    IsValid bool `json:"isvalid"`
 }
 
-var User = struct {
+var Users = struct {
     m map[string] User
-}
+    sync.RWMutex
+}{m: make(map[string] User)}
 
-type User Struct {
+type User struct {
     User_Name string
+    WebSocket *websocket.Conn
 }
 
 func Test(w http.ResponseWriter, r *http.Request) {
@@ -26,25 +30,83 @@ func Test(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestJson(w http.ResponseWriter, r *http.Request) {
-    response := CreateResponse()
+    response := CreateResponse("Test del formato JSON",200, true)
     json.NewEncoder(w).Encode(response)
 }
 
-func CreateResponse() Response {
-    return Response{"Test del formato JSON", true}
+func CreateResponse(message string, status int, valid bool) Response {
+    return Response{message, status, valid}
 }
 
 func LoadStatic(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, "./public/index.html")
 }
 
-function UserExist(user_name string) bool {
+func UserExist(user_name string) bool {
+    Users.RLock()
+    defer Users.RUnlock()
 
+    if _, ok := Users.m[user_name]; ok {
+        return true
+    }
+
+    return false
 }
 
-func validate(w http.ResponseWriter, r *http.Request) {
-    r.ParserForm()
+func Validate(w http.ResponseWriter, r *http.Request) {
+    r.ParseForm()
     user_name := r.FormValue("user_name")
+
+    response := Response{}
+
+    if UserExist(user_name) {
+        response.IsValid = false
+    }else{
+        response.IsValid = true
+    }
+
+    json.NewEncoder(w).Encode(response)
+}
+
+func AddUser(user User) {
+    Users.Lock()
+    defer Users.Unlock()
+
+    Users.m[user.User_Name] = user
+}
+
+func CreateUser(user_name string, ws *websocket.Conn) User {
+    return User{user_name, ws}
+}
+
+func RemoveUser(user_name string) {
+    Users.Lock()
+    defer Users.Unlock()
+    delete(Users.m, user_name)
+}
+
+func WebSocket(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    user_name := vars["user_name"]
+
+    ws, err := websocket.Upgrade(w, r, nil, 1024, 1024)
+
+    if err != nil {
+        log.Println(err)
+        return
+    }
+
+    current_user := CreateUser(user_name, ws);
+    AddUser(current_user)
+    log.Println("Nuevo usuario agregado")
+
+    for {
+        _, _, err := ws.ReadMessage();
+        if err != nil {
+            RemoveUser(user_name)
+            return
+        }
+    }
 }
 
 func main()  {
@@ -57,7 +119,8 @@ func main()  {
     mux.HandleFunc("/test", Test).Methods("GET")
     mux.HandleFunc("/testJson", TestJson).Methods("GET")
     mux.HandleFunc("/static", LoadStatic).Methods("GET")
-    mux.HandleFunc("/validate", validate).Methods("POST")
+    mux.HandleFunc("/validate", Validate).Methods("POST")
+    mux.HandleFunc("/chat/{user_name}", WebSocket).Methods("GET")
 
     http.Handle("/", mux)
     http.Handle("/css/", http.StripPrefix("/css/", cssHandle))
