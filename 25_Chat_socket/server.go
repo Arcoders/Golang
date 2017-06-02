@@ -5,11 +5,20 @@ import (
     "log"
     "net/http"
     "encoding/json"
+    "sync"
 )
 
 type Response struct {
     Message string `json:"message"`
     Status bool `json:"status"`
+}
+
+var User = struct {
+    m map[string] User
+}
+
+type User Struct {
+    User_Name string
 }
 
 func Test(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +38,15 @@ func LoadStatic(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, "./public/index.html")
 }
 
+function UserExist(user_name string) bool {
+
+}
+
+func validate(w http.ResponseWriter, r *http.Request) {
+    r.ParserForm()
+    user_name := r.FormValue("user_name")
+}
+
 func main()  {
 
     cssHandle := http.FileServer(http.Dir("./public/css/"))
@@ -39,6 +57,7 @@ func main()  {
     mux.HandleFunc("/test", Test).Methods("GET")
     mux.HandleFunc("/testJson", TestJson).Methods("GET")
     mux.HandleFunc("/static", LoadStatic).Methods("GET")
+    mux.HandleFunc("/validate", validate).Methods("POST")
 
     http.Handle("/", mux)
     http.Handle("/css/", http.StripPrefix("/css/", cssHandle))
