@@ -1,8 +1,32 @@
 body {
-    background-color: lavender;
+
 }
 
-hr {
-    height: 5px;
-    background: crimson
+#registro {
+    background-color: #eee;
+    padding: 10px 15px;
+    width: 40%;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 10em;
+}
+
+#registro input, #registro label{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#registro input[type="text"] {
+    width: 80%;
+}
+
+#registro label {
+    width: 20%;
+    text-align: left;
+}
+
+#registro input[type="submit"] {
+    float: right;
+    clear: both;
+    display: block;
 }
