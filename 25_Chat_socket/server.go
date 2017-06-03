@@ -132,7 +132,6 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func main()  {
-
     cssHandle := http.FileServer(http.Dir("./public/css/"))
     jsHandle := http.FileServer(http.Dir("./public/js/"))
 
