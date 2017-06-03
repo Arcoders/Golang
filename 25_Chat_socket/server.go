@@ -83,6 +83,7 @@ func RemoveUser(user_name string) {
     Users.Lock()
     defer Users.Unlock()
     delete(Users.m, user_name)
+    log.Println("El usuario " + user_name + " se desconectó")
 }
 
 func SendMessage(type_message int, message []byte) {
@@ -94,6 +95,14 @@ func SendMessage(type_message int, message []byte) {
             return
         }
     }
+}
+
+func ToArrayByte(value string) []byte {
+    return []byte(value)
+}
+
+func ConcatMessage(user_name string, array []byte) string {
+    return user_name + " : " + string(array[:])
 }
 
 func WebSocket(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +126,8 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
             RemoveUser(user_name)
             return
         }
-        SendMessage(type_message, message)
+        final_message := ConcatMessage(user_name, message)
+        SendMessage(type_message, ToArrayByte(final_message))
     }
 }
 

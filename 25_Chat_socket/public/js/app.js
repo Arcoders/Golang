@@ -37,7 +37,9 @@ $(document).ready(function() {
         final_conexion = conexion;
         conexion.onopen = function(response) {
             conexion.onmessage = function(response) {
-                console.log("Nos envió esto: " + response.data);
+                console.log("Nuevo mensaje, el usuario " + response.data);
+                val = $("#chat_area").val();
+                $("#chat_area").val(val + "\n" + response.data);
             }
         }
 
