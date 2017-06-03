@@ -51,7 +51,7 @@ func main() {
 
     fmt.Println("--------------------------------")
 
-    if dia, ok := dia[5]; ok {
+    if dia, ok := dia[3]; ok {
         if dia == "Miercoles" {
             fmt.Println("Correcto el dia 3 es el " + dia)
         } else {
@@ -59,5 +59,11 @@ func main() {
         }
     } else {
         fmt.Println("El valor no existe")
+    }
+
+    fmt.Println("--------------------------------")
+
+    for numero, dia := range dia {
+        fmt.Printf("El día %d es el %s \n", numero, dia)
     }
 }
