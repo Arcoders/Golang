@@ -30,3 +30,7 @@ body {
     clear: both;
     display: block;
 }
+
+#container_chat {
+    display: none;
+}

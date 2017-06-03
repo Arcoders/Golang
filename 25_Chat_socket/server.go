@@ -85,6 +85,17 @@ func RemoveUser(user_name string) {
     delete(Users.m, user_name)
 }
 
+func SendMessage(type_message int, message []byte) {
+    Users.RLock()
+    defer Users.RUnlock()
+
+    for _, user := range Users.m{
+        if err := user.WebSocket.WriteMessage(type_message, message); err != nil {
+            return
+        }
+    }
+}
+
 func WebSocket(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     user_name := vars["user_name"]
@@ -98,14 +109,15 @@ func WebSocket(w http.ResponseWriter, r *http.Request) {
 
     current_user := CreateUser(user_name, ws);
     AddUser(current_user)
-    log.Println("Nuevo usuario agregado")
+    log.Println("Nuevo usuario agregado con el nombre: " + user_name)
 
     for {
-        _, _, err := ws.ReadMessage();
+        type_message, message, err := ws.ReadMessage();
         if err != nil {
             RemoveUser(user_name)
             return
         }
+        SendMessage(type_message, message)
     }
 }
 
