@@ -2,10 +2,32 @@ package main
 
 import (
     "fmt"
+    "strings"
 )
 
 func print(cadena string) {
     fmt.Println(cadena)
+}
+
+func printDos(cadena string) {
+    fmt.Println(cadena)
+}
+
+func printTres(cadenaUno, cadenaDos string) {
+    fmt.Println(cadenaUno + cadenaDos)
+}
+
+func printCuatro(fprint func(string)) {
+    fprint("Hola desde printCuatro")
+}
+
+func incrementar() func() int {
+    i := 0
+    return func() (r int) {
+        r = i
+        i += 2
+        return
+    }
 }
 
 func main() {
@@ -14,9 +36,39 @@ func main() {
 
     imprimir(nombre)
 
-    print := func() {
+    imprimirDos := func() {
         fmt.Println(nombre)
     }
 
-    print()
+    imprimirDos()
+
+    imprimir = printDos
+    imprimir("Ismael Haytam")
+
+    fmt.Printf("Function print: %T \n", print)
+    fmt.Printf("Function printDos: %T \n", printDos)
+    fmt.Printf("Function printTres: %T \n", printTres)
+
+    printCuatro(print)
+
+    var nada func()
+    if nada == nil {
+        fmt.Println("La func Nada es igual a nil")
+    }
+
+    inc := incrementar()
+
+    fmt.Println("Valor de i: ", inc())
+    fmt.Println("Valor de i: ", inc())
+    fmt.Println("Valor de i: ", inc())
+    fmt.Println("Valor de i: ", inc())
+    fmt.Println("Valor de i: ", inc())
+
+    cadena := "abc"
+
+    cadena = strings.Map(func(r rune) rune {
+        return r + 3
+    }, cadena)
+
+    fmt.Println(cadena)
 }
