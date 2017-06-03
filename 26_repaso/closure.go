@@ -13,4 +13,10 @@ func main() {
     imprimir := print
 
     imprimir(nombre)
+
+    print := func() {
+        fmt.Println(nombre)
+    }
+
+    print()
 }
