@@ -30,6 +30,13 @@ func incrementar() func() int {
     }
 }
 
+func multiplicar(numero int) (n1, n2, n3 int) {
+    n1 = numero * 10
+    n2 = numero * 20
+    n3 = numero * 30
+    return
+}
+
 func main() {
     nombre := "Ismael Haytam"
     imprimir := print
@@ -71,4 +78,6 @@ func main() {
     }, cadena)
 
     fmt.Println(cadena)
+
+    fmt.Println(multiplicar(10))
 }
