@@ -6,14 +6,14 @@ import(
     "time"
 )
 
-func enviarMensaje(out <-chan string, numero int) {
+func enviarMensaje(out chan<- string, numero int) {
     for {
         out <- "Mensaje: " + strconv.Itoa(numero)
-        fmt.Println("Enviando mensjaje func: ", numero)
+        fmt.Println("Enviando mensaje func: ", numero)
     }
 }
 
-func imprimir(int <-chan string)  {
+func imprimir(in <-chan string)  {
     for x := range in {
         fmt.Println(x)
         time.Sleep(1 * time.Second)
