@@ -21,7 +21,7 @@ func main() {
         done <- struct{}{}
     }()
 
-    mustCopy(Conn, os.Stdin)
+    mustCopy(conn, os.Stdin)
     conn.Close()
     <-done
 }

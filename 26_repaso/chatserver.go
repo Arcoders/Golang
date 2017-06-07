@@ -39,9 +39,9 @@ func handleConn(conn net.Conn) {
 	go clientWriter(conn, ch)
 
 	quien := conn.RemoteAddr().String()
-	ch <- "Tú eres" + quien
+	ch <- "Tú eres: " + quien
 
-	mensajes <- quien + "se ha conectado a la sala"
+	mensajes <- quien + " se ha conectado a la sala..."
 	entrantes <- ch
 
 	input := bufio.NewScanner(conn)
@@ -50,7 +50,7 @@ func handleConn(conn net.Conn) {
 	}
 
 	salientes <- ch
-	mensajes <- quien + "se ha ido"
+	mensajes <- quien + " se ha ido..."
 	conn.Close()
 }
 
